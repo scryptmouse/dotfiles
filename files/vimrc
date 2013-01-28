@@ -1,0 +1,278 @@
+" Alexa's vimrc
+
+set nocompatible
+filetype off
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+" Manage vundle with vundle
+Bundle 'gmarik/vundle'
+
+" General Programming
+Bundle 'xolox/vim-easytags'
+Bundle 'kien/rainbow_parentheses.vim'
+Bundle 'majutsushi/tagbar'
+
+" Clojure
+Bundle 'VimClojure'
+
+" Coffee / JavaScript
+Bundle 'kchmck/vim-coffee-script'
+Bundle 'digitaltoad/vim-jade'
+Bundle 'pangloss/vim-javascript'
+Bundle 'itspriddle/vim-jquery'
+Bundle 'sleistner/vim-jshint'
+Bundle 'vim-json-bundle'
+
+" CSS / HTML
+Bundle 'groenewege/vim-less'
+Bundle 'othree/html5.vim'
+Bundle 'wavded/vim-stylus'
+Bundle 'skammer/vim-css-color'
+Bundle 'hail2u/vim-css3-syntax'
+
+" Git
+Bundle 'tpope/vim-git'
+Bundle 'Gist.vim'
+
+" Other Syntaxes
+Bundle 'gitolite.vim'
+Bundle 'rainux/vim-vala'
+Bundle 'avakhov/vim-yaml'
+Bundle 'xhr/vim-io'
+Bundle 'jcf/vim-latex'
+
+" Perl
+Bundle 'vim-perl/vim-perl'
+
+" PHP
+Bundle 'spf13/PIV'
+
+" Python stuff, requires +python
+if has('python')
+	Bundle 'klen/python-mode'
+endif
+
+" Ruby
+Bundle 'tobiassvn/vim-gemfile'
+Bundle 'tpope/vim-rails'
+Bundle 'skwp/vim-rspec'
+Bundle 'vim-ruby/vim-ruby'
+Bundle 'tpope/vim-cucumber'
+
+" Scala
+Bundle 'derekwyatt/vim-scala'
+Bundle 'gre/play2vim'
+Bundle 'Shadowfiend/liftweb-vim'
+
+" Sysadmin
+" Bundle 'sclo/haproxy.vim'
+
+" Templating / Markup stuff
+Bundle 'jimmyhchan/dustjs.vim'
+Bundle 'tpope/vim-haml'
+Bundle 'nono/vim-handlebars'
+Bundle 'plasticboy/vim-markdown'
+Bundle 'slim-template/vim-slim'
+Bundle 'timcharper/textile.vim'
+Bundle 'aaronj1335/underscore-templates.vim'
+
+" UI
+Bundle 'scrooloose/nerdtree'
+Bundle 'scrooloose/nerdcommenter'
+Bundle 'jistr/vim-nerdtree-tabs'
+Bundle 'millermedeiros/vim-statline'
+Bundle 'altercation/vim-colors-solarized'
+
+syntax enable
+
+set background=dark
+
+if has("gui_running")
+	set t_Co=256
+	colorscheme ir_black
+else
+	colorscheme solarized
+endif
+
+"inoremap <leader><Esc> <Esc>`^
+inoremap jj <Esc>`^
+inoremap uu _
+inoremap uU __
+inoremap aa @
+inoremap vv ->
+inoremap hh =>
+
+" newline without exiting normal mode
+nnoremap <CR><Up> I<CR><Esc>
+nnoremap <CR><Down> A<CR><Esc>k
+
+" Fancy line wranglin'
+" Move line up
+nnoremap d<Up> ddkP
+" move line down
+nnoremap d<Down> ddp
+
+" allow sudo if file opened for editing without write access
+cmap w!! w !sudo tee % >/dev/null
+
+" Don't use Ex mode, use Q for formatting
+map Q gq
+
+" clear search buffer
+nmap <silent> ,/ :nohlsearch<CR>
+
+" kill final whitespace
+nnoremap <silent> ,<Space> :%s/\s\+$//<CR>,/
+
+" taglist/exuberant ctags
+nmap <F8> :TagbarToggle<CR>
+
+" CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
+" so that you can undo CTRL-U after inserting a line break.
+inoremap <C-U> <C-G>u<C-U>
+
+" Because sometimes shift is sticky.
+command WQ wq
+command Wq wq
+command W w
+command Q q
+
+" allow backspacing over everything in insert mode
+set backspace=indent,eol,start
+
+set pastetoggle=<F2> " Pastetoggle for pasteinsert mode
+set history=50		" keep 50 lines of command line history
+set ruler			" show the cursor position all the time
+set showcmd			" display incomplete commands
+set hlsearch		" highlight search
+set incsearch		" do incremental searching
+set ignorecase		" ignore case when searching
+set smartcase		" ignore case when searching lowercase
+
+set cursorline		" cursor row highlight
+set cursorcolumn    " cursor column highlight
+
+set equalalways		" multiple windows, when created, are equal in size
+set splitbelow splitright
+
+set nowrap			" No wrapping by default
+set linebreak		" But wrap at word if I enable it
+set number			" line numbers
+
+if has('mac')
+	set modeline		" Must be explicitly set for OSX
+	set modelines=2		" Only load the first modeline
+endif
+
+set autoindent smartindent
+
+" default tab settings for most languages
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set noexpandtab
+
+" highlight over 80 columns
+highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+match OverLength /\%81v.\+/
+
+" In many terminal emulators the mouse works just fine, thus enable it.
+if has('mouse')
+	set mouse=a
+endif
+
+" Switch pwd to same as file being edited in current window
+autocmd BufEnter * silent! lcd %:p:h
+
+filetype plugin indent on
+
+autocmd FileType text setlocal textwidth=78
+
+" When editing a file, always jump to the last known cursor position.
+" Don't do it when the position is invalid or when inside an event handler
+" (happens when dropping a file on gvim).
+" Also don't do it when the mark is in the first line, that is the default
+" position when opening a file.
+autocmd BufReadPost
+\ if line("'\"") > 1 && line("'\"") <= line("$") |
+\   exe "normal! g`\"" |
+\ endif
+
+" function to set executable bit, self-explanatory
+function! SetExecutableBit()
+	let fname = expand("%:p")
+	checktime
+	execute "au FileChangedShell " . fname . " :echo"
+	silent !chmod a+x %
+	checktime
+	execute "au! FileChangedShell " . fname
+endfunction
+command! Xbit call SetExecutableBit()
+
+" function to see differences since modification
+if !exists(":DiffOrig")
+	command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
+	            "\ | wincmd p | diffthis
+endif
+
+" Autocomplete parentheses
+inoremap (	()<Left>
+inoremap {	{}<Left>
+inoremap [	[]<Left>
+
+vnoremap (	s()<Esc>P<Right>%
+vnoremap {	s{}<Esc>P<Right>%
+vnoremap [	s[]<Esc>P<Right>%
+
+" surround content with additional spaces
+vnoremap ) s(  )<Esc><Left>P<Right><Right>%
+vnoremap } s{  }<Esc><Left>P<Right><Right>%
+vnoremap ] s[  ]<Esc><Left>P<Right><Right>%
+
+" EasyTags options
+set tags=./.tags;
+let g:easytags_dynamic_files = 1
+let g:easytags_by_filetype = '~/.vim/tags/'
+let g:easytags_updatetime_autodisable = 1
+
+let g:cssColorVimDoNotMessMyUpdatetime = 1
+
+" VimClojure
+let vimclojure#FuzzyIndent=1
+let vimclojure#HighlightBuiltins=1
+let vimclojure#HighlightContrib=1
+let vimclojure#DynamicHighlighting=1
+let vimclojure#ParenRainbow=1
+let vimclojure#WantNailgun=1
+let vimclojure#NailgunClient = $HOME . "/.vim/lib/vimclojure-nailgun-client/ng"
+
+" PythonMode
+let g:pymode_lint_ignore = "E128,E221"
+let g:pymode_folding = 0
+let g:pymode_syntax_print_as_function = 1
+
+" rainbow parens
+" au VimEnter * RainbowParenthesesToggle
+" au Syntax * RainbowParenthesesLoadRound
+" au Syntax * RainbowParenthesesLoadSquare
+" au Syntax * RainbowParenthesesLoadBraces
+
+" Set some smaller tabs for certain syntaxes
+
+autocmd FileType javascript setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType ruby	setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType eruby	setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType jade	setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType coffee setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType jquery setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType json	setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType haml	setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType html	setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType css	setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType less	setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType xhtml	setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+
+autocmd FileType c		setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+autocmd FileType cpp	setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab

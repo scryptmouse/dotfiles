@@ -1,0 +1,26 @@
+
+# OSX Stuff
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+!.gitignore
+*~
+.directory
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# TextMate
+*.tmproj
+*.tmproject
+tmtags
+
+# Vim
+.*.swp
+
+#
+.*.bak[1-9]?

@@ -1,0 +1,9 @@
+set t_Co=256		" 256 colors
+set guioptions-=r	" No right scrollbar
+set guioptions-=T	" No toolbar
+set guioptions-=m
+
+if has("gui_macvim")
+	set gfn=Inconsolata-dz:h13
+	set transparency=15
+endif

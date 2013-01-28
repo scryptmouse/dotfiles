@@ -1,0 +1,4 @@
+*.py[cod]
+files/vim/tags
+files/vim/bundle
+files/vim/lib/vimclojure-nailgun-client/ng

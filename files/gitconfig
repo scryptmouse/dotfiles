@@ -1,0 +1,13 @@
+[user]
+	name = Alexa Grey
+	email = devel@mouse.vc
+[core]
+	excludesfile = ~/.cvsignore
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[branch "gh-pages"]
+	remote = origin
+	merge = refs/heads/master
+[color]
+	ui = true

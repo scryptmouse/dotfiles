@@ -1,0 +1,6 @@
+export NODE_PATH=/usr/local/lib/node_modules
+export ANDROID_SDK_ROOT=/usr/local/Cellar/android-sdk/r21.0.1
+
+if [ -f ~/perl5/perlbrew/etc/bashrc ]; then
+	source ~/perl5/perlbrew/etc/bashrc
+fi
